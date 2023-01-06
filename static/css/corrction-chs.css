@@ -1,0 +1,7 @@
+.whole-box{
+    margin: auto;
+      width: 100%;
+}
+.whole-box .item span{
+    margin-top: 30px;
+}

@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extrastyle %}
+	<!-- <link rel="stylesheet" type="text/css" href="{% static 'css/demo.css' %}" /> -->
+    <link rel="stylesheet" href="{% static 'css/component.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/correction.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/send-research.css' %}" />
+    <style>
+	.box .right{
+		background-size: cover;
+	}
+	.container{
+		max-width:1350px;
+	}
+        input[type="number"]{
+            width:60px;
+            -webkit-appearance: none;
+            -moz-appearance: textfield;
+        }
+    </style>
+{% endblock extrastyle %}
+
+{% block title %}الرسائل البحثية - تصحيح الأبحاث{% endblock title %}
+
+{% block body %}
+    <div class="box">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 right">
+                <div class="professor">
+                    <img class="img-fluid" src="/media/images/professor2.png" alt="عضو هيئة تدريس" id="type-f-img">
+                    <span id="name-span" class="name">{{ request.user.name }}</span>
+                    <p class="choosed title">المقرر الذي قمت باختياره : </p>
+                    <p class="choosed name">{{ selected_subject.name }}</p>
+
+                </div>
+
+            </div>
+                <section class="s-report">
+                    <div class="row">
+                        <div class="content hide" id="content">
+                            <div class="col-12 r-item">
+                                <h3 class="s-n" id="sn"> قمت بإضافة <span style="color:darkred;">{{ selected_subject.len_researches_list }}</span>  من المواضيع لهذا المقرر</h3>
+                            </div>
+                            <div class="col-12 r-item">
+                                <h3 class="s-s" id="ss"><span style="color:darkred;">{{ selected_subject.len_students }}</span> من الطلاب يدرس هذا المقرر </h3>
+                            </div>
+                            <div class="col-12 r-item">
+                                <h3 class="s-d" id="sd"> <span style="color:darkred;">{{ selected_subject.len_student_researches_list }}</span>  من الطلاب قام بتقديم بحث في هذا المقرر </h3>
+                            </div>
+                        </div>
+                        <button id="arrow" onclick="event.preventDefault()">
+                            <div class="col-12 r-item arrow"><i class="fas fa-angle-down" id="arrowi"></i></div>
+                        </button>
+                    </div>
+                </section>
+
+            <div class="col-lg-12 col-md-12 left subjects">
+
+                <div class="row">
+                    <div class="col-12">
+                        <span>{{ selected_research.name }}</span>
+                        <div class="col-12"><a href="#correct_form_submit"><h4 style="color: red;">تأكد من قيامك بالضغط على زر <span style="color:rgb(255, 179, 0); font-size:0.8em; display: block;">(حفظ التغييرات)</span>  لتأكيد البيانات</h4></a></div>
+                    </div>
+                </div>
+            </div>
+            <section class="col-12">
+                <form action="{% url 'researches:correcting' sid=selected_subject.id rid=selected_research.id %}" id="correcting_form" method="POST" class="">
+                    <div class="row">
+                    {% csrf_token %}
+                    <div class="col-12">
+                        <table class="first" id="correction-table" >
+                            <tr class="row2">
+                                <th>إسم الطالب</th>
+                                <th>الملف</th>
+
+                                <th>المقدمة <small>من10</small></th>
+                                <th>محاور الموضوع <small>من20</small></th>
+                                <th>المحتوى النظرى لمحاور الموضوع <small>من40</small></th>
+                                <th>الاستخلاصات <small>من20</small></th>
+                                <th>المراجع <small>من10</small></th>
+                                <th>المجموع</th>
+                                <th>النتيجة</th>
+                                <th>قام بالتصحيح</th>
+
+                            </tr>
+                            {% for student_research in corrected_researches %}
+                                {% for student in student_research.students_list %}
+                                    <tr class="row2">
+                                        <td>{{ student.name }}</td>
+                                        {% if student_research.first_student ==  student %}
+                                            <td rowspan="{{ student_research.len_students_list }}"><a href="{{ student_research.research_file.url }}" target="_blank">{{ student_research.research_file }}</a></td>
+                                            <td rowspan="{{ student_research.len_students_list }}">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <!-- Intro Field -->
+                                                        <input 
+                                                            type="number" 
+                                                            name="intro_{{ student_research.id }}" 
+                                                            oninvalid="this.setCustomValidity('من فضلك قم بإدخال رقم ما بين 0 و 10')" 
+                                                            oninput="this.setCustomValidity('')" 
+                                                            max="10"  
+                                                            min="0"
+                                                            {% if student_research.corrected %}
+                                                                value="{{ student_research.intro }}"
+                                                            {% endif %}
+
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td rowspan="{{ student_research.len_students_list }}">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <!-- Axes Field -->
+                                                        <input 
+                                                            type="number" 
+                                                            name="axes_{{ student_research.id }}" 
+                                                            oninvalid="this.setCustomValidity('من فضلك قم بإدخال رقم ما بين 0 و 20')" 
+                                                            oninput="this.setCustomValidity('')" 
+                                                            max="20"  
+                                                            min="0"
+                                                            {% if student_research.corrected %}
+                                                                value="{{ student_research.axes }}"
+                                                            {% endif %}
+
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td rowspan="{{ student_research.len_students_list }}">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <!-- Content Field -->
+                                                        <input 
+                                                            type="number"
+                                                            name="content_{{ student_research.id }}" 
+                                                            oninvalid="this.setCustomValidity('من فضلك قم بإدخال رقم ما بين 0 و 40')" 
+                                                            oninput="this.setCustomValidity('')" 
+                                                            max="40"  
+                                                            min="0"
+                                                            {% if student_research.corrected %}
+                                                                value="{{ student_research.content }}"
+                                                            {% endif %}
+
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td rowspan="{{ student_research.len_students_list }}">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <!-- Conclusions Field -->
+                                                        <input 
+                                                            type="number" 
+                                                            name="conclusions_{{ student_research.id }}"
+                                                            oninvalid="this.setCustomValidity('من فضلك قم بإدخال رقم ما بين 0 و 20')" 
+                                                            oninput="this.setCustomValidity('')" 
+                                                            max="20"  
+                                                            min="0"
+                                                            {% if student_research.corrected %}
+                                                                value="{{ student_research.conclusions }}"
+                                                            {% endif %}
+
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td rowspan="{{ student_research.len_students_list }}">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <!-- References Field -->
+                                                        <input 
+                                                            type="number" 
+                                                            name="references_{{ student_research.id }}" 
+                                                            oninvalid="this.setCustomValidity('من فضلك قم بإدخال رقم ما بين 0 و 10')" 
+                                                            oninput="this.setCustomValidity('')"  
+                                                            max="10" 
+                                                            min="0"
+                                                            {% if student_research.corrected %}
+                                                                value="{{ student_research.references }}"
+                                                            {% endif %}
+
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td rowspan="{{ student_research.len_students_list }}">
+                                                <div class="row">
+                                                    <div class="col-12" id="total_{{ student_research.id }}">
+                                                        <!-- Total -->
+                                                        {{ student_research.total }}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td rowspan="{{ student_research.len_students_list }}">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <!-- Passed or Not -->
+                                                        <span 
+                                                            id="pon_{{ student_research.id }}" 
+                                                            class="{% if student_research.passed %}passed{% else %}not-passed{% endif %}"
+                                                        >
+                                                            {% if student_research.passed %}
+                                                                مستوفي
+                                                            {% else %}
+                                                                غير مستوفي
+                                                            {% endif %}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td rowspan="{{ student_research.len_students_list }}">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <!-- Corrected By -->
+                                                        <span 
+                                                        >
+                                                            {% if student_research.corrected_by %}
+							    	{{ student_research.corrected_by.name }}
+                                                            {% endif %}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        {% endif %}
+                                </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        </table>
+                    </div>
+                    <section class="exit-buttons col-12">
+                        <button class="save" id="correct_form_submit" type="submit">حفظ التغييرات</button>
+                    </section>
+                </div>
+                </form>
+
+            </section>
+            <section class="exit-buttons col-12">
+                <div class="row">
+                    <div class="col-lg-6"><a href="{% url 'researches:select_topic_to_correct' id=selected_subject.id %}">الرجوع</a></div>
+                    <div class="col-lg-6"><a href="{% url 'users:logout' %}">تسجيل الخروج</a></div>
+                </div>
+            </section>
+        </div>
+    </div>
+{% endblock body %}
+
+{% block script %}
+
+    <script src="{% static 'js/researches/correction.js' %}"></script>
+    <script src="https://kit.fontawesome.com/467a5808c9.js" crossorigin="anonymous"></script>
+    <script>
+        try {
+            document.getElementById("arrow").onclick = function () {
+                document.getElementById("content").classList.toggle("hide");
+                document.getElementById("arrowi").classList.toggle("fa-angle-down");
+                document.getElementById("arrowi").classList.toggle("fa-angle-up");
+            }
+        } catch{ }
+    </script>
+{% endblock script %}
+
+

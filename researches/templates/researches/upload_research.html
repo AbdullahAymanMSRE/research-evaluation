@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block extrastyle %}
+	<link rel="stylesheet" type="text/css" href="{% static 'css/demo.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/component.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/send-research.css' %}" />
+{% endblock extrastyle %}
+    
+
+{% block title %}الرسائل البحثية - اختيار المقررات{% endblock title %}
+
+{% block body %}
+    <div class="box">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 right">
+                <div class="professor">
+                    <img class="img-fluid" src="/media/images/single-student.png" alt="طالب" id="type-f-img">
+                    <span id="name-span" class="name">{{ request.user.name }}</span>
+                    <p class="choosed title">المقرر الذي قمت باختياره : </p>
+                    <p class="choosed name">{{ selected_subject.name }}</p>
+                </div>
+            </div>
+            <div class="col-lg-12 col-md-12 left subjects">
+
+                <div class="row">
+                    <div class="col-12">
+                        <span><div  class="alert alert-success collapse" role="alert">تم حفظ البيانات بنجاح</div></span>
+                        <span>{{ selected_research.name }}</span>
+                    </div>
+                    {% if open %}
+                        <form enctype="multipart/form-data"  method="POST" action="{% url 'researches:upload_research' sid=selected_subject.id rid=selected_research.id %}" id="sendr-form">
+                        {% csrf_token %}
+                    {% else %}
+                            <div class="col-12">
+                    {% endif %}
+                        <div class="upper" id="rinputs">
+                            <div id="choose-sub-box">
+                                <div class="col-12 item">
+                                    <span id="sr">
+                                        {% if stu_h %}
+                                            <a href="{{ stu_h.research_file.url }}" target="_blank">{{ stu_h.research_file }}</a>  
+                                        {% endif %}
+                                    </span>
+                                    {% if stu_h %}
+                                        {% if not stu_h.seen %}
+                                            <label class="file">
+                                            
+                                                <input type="file" name="file-7[]" id="file-7" class="inputfile inputfile-6 hide" data-multiple-caption="{count} files selected" multiple  required accept = ".pdf , .doc , .docx"/>
+                                            
+                                                <label for="file-7">
+                                                    <strong>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="17" viewBox="0 0 20 17">
+                                                            <path d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"/>
+                                                        </svg>
+                                                        إستبدال الملف بملف آخر&hellip;
+                                                        </strong>
+                                                </label>
+                                            
+                                            </label>
+                                        {% endif %}
+                                    {% else %}
+                                        <label class="file">
+                                        
+                                            <input type="file" name="file-7[]" id="file-7" class="inputfile inputfile-6 hide" data-multiple-caption="{count} files selected" multiple  required accept = ".pdf , .doc , .docx"/>
+                                           
+                                            <label for="file-7">
+                                                <strong>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="17" viewBox="0 0 20 17">
+                                                        <path d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"/>
+                                                    </svg>
+                                                     رفع الملف&hellip;
+                                                    </strong>
+                                            </label>
+                                        
+                                        </label>
+                                    {% endif %}
+                                    
+                                </div>
+                            </div>
+                        </div>
+			{% if request.user.team == selected_subject.team %}
+				<div class="upper" id="rinputs">
+				    <div id="choose-sub-box">
+					<div class="col-12 item">    
+					    <div class="row" id="add_colleagues">
+						<span style="color:brown">إضافة زملاء في الموضوع البحثي</span>
+					    </div>   
+					    <div class="row" id="colleagues_list">   
+						    {% for col in cols %}
+							    {% if stu_h %}
+							    	{% if col.hasl %}
+									{% if col.thisu %}
+										<div class="row">
+										    <input 
+											class="col-1" 
+											type="checkbox" 
+											value="{{ col.name }}" 
+											id="{{ col.name }}" 
+											name='colleagues' 
+											{% if col in stu_h.students_list %}checked="checked"{% endif %} 
+											{% if stu_h.seen %}disabled="disabled"{% endif %} 
+											/>
+										    <label class="col-11" id="collabel" for="{{ col.name }}">{{ col.name }}</label>
+										</div>
+									{% endif %}
+								{% else %}
+									    <div class="row">
+										<input 
+										    class="col-1" 
+										    type="checkbox" 
+										    value="{{ col.name }}" 
+										    id="{{ col.name }}" 
+										    name='colleagues' 
+										    />
+										<label class="col-11" id="collabel" for="{{ col.name }}">{{ col.name }}</label>
+									    </div>
+								{% endif %}
+							    {% else %}
+								    {% if not col.hasl %}
+									    <div class="row">
+								    
+										    <input class="col-1" type="checkbox" value="{{ col.name }}" id="{{ col.name }}" name='colleagues' />
+										    <label class="col-11" id="collabel" for="{{ col.name }}">{{ col.name }}</label>
+									    </div>
+								    {% endif %}
+
+							    {% endif %}
+
+						    {% endfor %}
+					    </div>                             
+					</div>
+				    </div>
+				</div>
+			{% endif %}
+                        {% if open %}
+                            <div class="col-12 buttons">
+                                <div class="row two" id="buttons">
+                                    {% if stu_h %}
+                                        {% if not stu_h.seen %}
+                                            <div class="col-12"><button type="submit" id="sent">إرسال</button></div>
+                                        {% endif %}
+                                    {% else %}
+                                        <div class="col-12"><button type="submit" id="sent">إرسال</button></div>
+                                    {% endif %}
+                                </div>
+                                <!-- <div class="row three">
+                                    <div class="col-4"><button type="submit">إنهاء</button></div>
+                                    <div class="col-4"><button type="button">اضافة موضوع آخر</button></div>
+                                    <div class="col-4"><button type="button">حذف الموضوع</button></div>
+                                </div> -->
+                            </div>
+                        {% else %}
+                            <div class="col-12 buttons">
+                                <div class="row two" id="buttons">
+                            <div class="col-12"><button onclick="alert('سيتم فتح تقديم الابحاث من يوم 31/5/2020 وحتى 10/6/2020')">إرسال</button></div>
+                                </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                    </form>
+                </div>
+            </div>
+            <section class="exit-buttons col-12">
+                <div class="row">
+                    <div class="col-lg-6"><a href="{% url 'researches:select_topic_to_correct' id=selected_subject.id %}">الرجوع</a></div>
+                    <div class="col-lg-6"><a href="{% url 'users:logout' %}">تسجيل الخروج</a></div>
+                </div>
+            </section>
+        </div>
+    </div>
+{% endblock body %}
+
+{% block script %}
+    <script src="https://kit.fontawesome.com/467a5808c9.js" crossorigin="anonymous"></script>
+    <script src="{% static 'js/researches/upload_research.js' %}"></script>
+{% endblock script %}
+

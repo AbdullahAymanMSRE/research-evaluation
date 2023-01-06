@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+
+{% block title %}الرسائل البحثية{% endblock title %}
+
+{% block body %}
+    <div class="title">
+        <h1> إدارة الرسائل البحثية للطلاب </h1>
+            </div>
+    <section class="user-type">
+        <a href="{% url 'users:login' prof='student' %}">
+            <div class="student">
+                <img class="img-fluid" src="/media/images/student.png" alt="طالب" >
+                <span>طالب</span>
+            </div>
+        </a>
+        <a href="{% url 'users:login' prof='professor' %}">
+            <div class="professor">
+                <img src="/media/images/professor2.png" alt="عضو هيئة تدريس" >
+                <span>عضو هيئة تدريس</span>
+            </div>
+        </a>
+
+    </section>
+{% endblock body %}

@@ -1,0 +1,16 @@
+@media print{
+    span.name{
+        display: block;
+        color: #000;
+    }
+    table td{
+        padding-top: 0 ;
+        padding-bottom: 0 ;
+    }
+    .box .left{
+        padding-bottom: 0 ;
+    }
+    .box.right{
+        padding-top: 0;
+    }
+}

@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block extrastyle %}
+    <link rel="stylesheet" href="{% static 'css/admin-1.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/send-research.css' %}" />
+    <style>
+        .manage-btn, .manage-btn a{
+		background-color: rgb(0, 130, 182)!important;
+		font-size: 1.3em;
+	}
+    </style>
+{% endblock extrastyle %}
+    
+
+{% block title %}إدارة المنصة{% endblock title %}
+
+{% block body %}
+    <div class="box">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 right">
+                <div class="professor">
+                    <img class="img-fluid" src="/media/images/professor2.png" alt="عضو هيئة تدريس" id="type-f-img">
+                    <span id="name-span" class="name">{{ request.user.name }}</span>
+                    <p class="choosed title">
+                        {% if request.user.admin %}المدير
+                        {% elif request.user.staff %}عميد
+                        {% elif request.user.control_head %}رئيس كنترول
+                        {% elif request.user.dprtmngr %}رئيس قسم
+                        {% endif %}
+                            
+                    </p>
+                    <p class="choosed name">إدارة المنصة</p>
+
+                </div>
+            </div>           
+            {% if request.user.admin %}
+                <section class="exit-buttons col-12" style="margin-top:20px;">
+                    <button class="save manage-btn" type="button" style="width:80% ; padding: 15px;"><a href="{% url 'administration:upload_data' %}" style="background-color:rgb(255, 179, 0); ">إدخال البيانات</a></button>
+                </section>
+                <section class="exit-buttons col-12" style="margin-top:20px;">
+                    <button class="save manage-btn" type="button" style="width:80% ; padding: 15px;"><a href="{% url 'administration:privileges' %}" style="background-color:rgb(255, 179, 0); ">وضع الصلاحيات</a></button>
+                </section>
+                <section class="exit-buttons col-12" style="margin-top:20px;">
+                    <button class="save manage-btn" type="button" style="width:80% ; padding: 15px;"><a href="{% url 'unistruct:adding_subjects' %}" style="background-color:rgb(255, 179, 0); ">إضافة المقررات التي أقوم بتدريسها</a></button>
+                </section>
+                <section class="exit-buttons col-12" style="margin-top:20px;">
+                    <button class="save manage-btn" type="button" style="width:80% ; padding: 15px;"><a href="{% url 'administration:subjects_report' %}" style="background-color:rgb(255, 179, 0); ">بيانات تسجيل المقررات</a></button>
+                </section>
+                <section class="exit-buttons col-12" style="margin-top:20px;">
+                    <button class="save manage-btn" type="button" style="width:80% ; padding: 15px;"><a href="{% url 'researches:main' %}" style="background-color:rgb(255, 179, 0); ">الموضوعات البحثية</a></button>
+                </section>
+                <section class="exit-buttons col-12" style="margin-top:20px;">
+                    <button class="save manage-btn" type="button" style="width:80% ; padding: 15px;"><a href="{% url 'administration:reports' %}" style="background-color:rgb(255, 179, 0); ">بيانات تصحيح المقررات</a></button>
+                </section>
+                <section class="exit-buttons col-12" style="margin-top:20px;">
+                    <button class="save manage-btn" type="button" style="width:80% ; padding: 15px;"><a href="{% url 'administration:resaults' %}" style="background-color:rgb(255, 179, 0); ">النتائج</a></button>
+                </section>
+            {% elif request.user.staff %}
+                <section class="exit-buttons col-12" style="margin-top:20px;">
+                    <button class="save manage-btn" type="button" style="width:80% ; padding: 15px;"><a href="{% url 'administration:upload_data' %}" style="background-color:rgb(255, 179, 0); ">إدخال البيانات</a></button>
+                </section>
+                <section class="exit-buttons col-12" style="margin-top:20px;">
+                    <button class="save manage-btn" type="button" style="width:80% ; padding: 15px;"><a href="{% url 'administration:privileges' %}" style="background-color:rgb(255, 179, 0); ">وضع الصلاحيات</a></button>
+                </section>
+                <section class="exit-buttons col-12" style="margin-top:20px;">
+                    <button class="save manage-btn" type="button" style="width:80% ; padding: 15px;"><a href="{% url 'unistruct:adding_subjects' %}" style="background-color:rgb(255, 179, 0); ">إضافة المقررات التي أقوم بتدريسها</a></button>
+                </section>
+                <section class="exit-buttons col-12" style="margin-top:20px;">
+                    <button class="save manage-btn" type="button" style="width:80% ; padding: 15px;"><a href="{% url 'administration:subjects_report' %}" style="background-color:rgb(255, 179, 0); ">بيانات تسجيل المقررات</a></button>
+                </section>
+                <section class="exit-buttons col-12" style="margin-top:20px;">
+                    <button class="save manage-btn" type="button" style="width:80% ; padding: 15px;"><a href="{% url 'researches:main' %}" style="background-color:rgb(255, 179, 0); ">الموضوعات البحثية</a></button>
+                </section>
+                <section class="exit-buttons col-12" style="margin-top:20px;">
+                    <button class="save manage-btn" type="button" style="width:80% ; padding: 15px;"><a href="{% url 'administration:reports' %}" style="background-color:rgb(255, 179, 0); ">بيانات تصحيح المقررات</a></button>
+                </section>
+                <section class="exit-buttons col-12" style="margin-top:20px;">
+                    <button class="save manage-btn" type="button" style="width:80% ; padding: 15px;"><a href="{% url 'administration:resaults' %}" style="background-color:rgb(255, 179, 0); ">النتائج</a></button>
+                </section>
+            {% elif request.user.control_head %}
+                <section class="exit-buttons col-12" style="margin-top:20px;">
+                    <button class="save manage-btn" type="button" style="width:80% ; padding: 15px;"><a href="{% url 'unistruct:adding_subjects' %}" style="background-color:rgb(255, 179, 0); ">إضافة المقررات التي أقوم بتدريسها</a></button>
+                </section>
+                <section class="exit-buttons col-12" style="margin-top:20px;">
+                    <button class="save manage-btn" type="button" style="width:80% ; padding: 15px;"><a href="{% url 'researches:main' %}" style="background-color:rgb(255, 179, 0); ">الموضوعات البحثية</a></button>
+                </section>
+                <section class="exit-buttons col-12" style="margin-top:20px;">
+                    <button class="save manage-btn" type="button" style="width:80% ; padding: 15px;"><a href="{% url 'administration:reports' %}" style="background-color:rgb(255, 179, 0); ">بيانات تصحيح المقررات</a></button>
+                </section>
+                <section class="exit-buttons col-12" style="margin-top:20px;">
+                    <button class="save manage-btn" type="button" style="width:80% ; padding: 15px;"><a href="{% url 'administration:resaults' %}" style="background-color:rgb(255, 179, 0); ">النتائج</a></button>
+                </section>
+            {% elif user.dprtmngr %}
+                <section class="exit-buttons col-12" style="margin-top:20px;">
+                    <button class="save manage-btn" type="button" style="width:80% ; padding: 15px;"><a href="{% url 'administration:subjects_report' %}" style="background-color:rgb(255, 179, 0); ">بيانات تسجيل المقررات</a></button>
+                </section>
+                <section class="exit-buttons col-12" style="margin-top:20px;">
+                    <button class="save manage-btn" type="button" style="width:80% ; padding: 15px;"><a href="{% url 'unistruct:adding_subjects' %}" style="background-color:rgb(255, 179, 0); ">إضافة المقررات التي أقوم بتدريسها</a></button>
+                </section>
+                <section class="exit-buttons col-12" style="margin-top:20px;">
+                    <button class="save manage-btn" type="button" style="width:80% ; padding: 15px;"><a href="{% url 'researches:main' %}" style="background-color:rgb(255, 179, 0); ">الموضوعات البحثية</a></button>
+                </section>
+            {% else %}
+                <section class="exit-buttons col-12" style="margin-top:20px;">
+                    <button class="save manage-btn" type="button" style="width:80% ; padding: 15px;"><a href="{% url 'unistruct:adding_subjects' %}" style="background-color:rgb(255, 179, 0); ">إضافة المقررات التي أقوم بتدريسها</a></button>
+                </section>
+                <section class="exit-buttons col-12" style="margin-top:20px;">
+                    <button class="save manage-btn" type="button" style="width:80% ; padding: 15px;"><a href="{% url 'researches:main' %}" style="background-color:rgb(255, 179, 0); ">الموضوعات البحثية</a></button>
+                </section>
+            {% endif %}
+            
+            <section class="exit-buttons col-12">
+                <div class="row">
+                    <div class="col-lg-12"><a href="{% url 'researches:main' %}">الرجوع</a></div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12"><a  style="background-color: darkred;" href="{% url 'users:logout' %}">تسجيل الخروج</a></div>
+                </div>
+            </section>
+        </div>
+    </div>
+{% endblock body %}
+{% block script %}
+    <script>
+
+    </script>
+{% endblock script %}

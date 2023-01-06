@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block extrastyle %}
+    <link rel="stylesheet" href="{% static 'css/admin-1.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/send-research.css' %}" />
+    <style>
+    </style>
+{% endblock extrastyle %}
+    
+
+{% block title %}الرسائل البحثية - إعتماد النتائج{% endblock title %}
+
+{% block body %}
+    <div class="box">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 right">
+                <div class="professor">
+                    <img class="img-fluid" src="/media/images/professor2.png" alt="عضو هيئة تدريس" id="type-f-img">
+                    <span id="name-span" class="name">
+                        {{ request.user.name }} - 
+                        {% if request.user.admin %}
+                            المدير
+                        {% elif request.user.staff %}
+                            عميد كلية {{ request.user.faculty.name }}
+                        {% elif request.user.control_head %}
+                            رئيس كنترول الفرقة {{ request.user.team.name }}
+                        {% endif %}
+                    </span>
+                    <p class="choosed title">
+                        اعتماد نتيجة
+                        {% if request.user.admin %}
+                            الكليات
+                        {% elif request.user.staff %}
+                             كلية {{ request.user.faculty.name }}
+                        {% elif request.user.control_head %}
+                             الفرقة {{ request.user.team.name }}
+                        {% endif %}
+                    </p>
+                    <!-- <p class="choosed name">نسبة النجاح : 100%</p> -->
+
+                </div>
+
+            </div>
+            
+        <div class="col-lg-12 col-md-12 left subjects">
+        </div>
+        <section class="col-12 hide" id = "aver-sub">
+            <!-- <h2 style="padding-top: 20px;">  نسبة النجاح لهذا المقرر : <span style="color: darkred;">100%</span></h2> -->
+            <h2><span></span></h2>   
+            
+        </section>
+        {% if request.user.admin %}
+            {% for faculty in faculties %}
+                <section class="col-12">
+                    <table class="first" class="hide" id="approval-table">
+                        <tr class="row2">
+                            <th>الكلية</th>
+                            <th>الكنترول</th>
+                            <th>نسبة النجاح</th>
+                            <th>اعتماد رئيس الكنترول</th>
+                            <th>اعتماد العميد</th>
+                        </tr>
+                        {% for team in faculty.teams_list %}
+                            <tr class="row2">
+                                <th>{{ faculty.name }}</th>
+                                <td class="name">{{ team.name }}</td>
+                                <td>{{ team.success_percentage }}%</td>
+                                <td>
+                                    <input type="checkbox" disabled="disabled" {% if team.sdone %}checked="checked"{% endif %} />
+                                </td>
+                                <td>
+                                    <input type="checkbox" disabled="disabled" {% if team.done %}checked="checked"{% endif %} />
+                                </td>
+                            </tr>    
+                        {% endfor %}
+                    </table>
+                </section>
+            {% endfor %}
+        {% elif request.user.staff %}
+            <form method="POST" action="{% url 'administration:approval' %}" class="col-12 row">
+                {% csrf_token %}
+                <section class="col-12">
+                    <table>
+                        <tr class="row2">
+                            <th>الكنترول</th>
+                            <th>نسبة النجاح</th>
+                            <th>اعتماد رئيس الكنترول</th>
+                            <th>اعتماد العميد</th>
+                        </tr>
+                        {% for team in request.user.faculty.teams_list %}
+                            <tr class="row2">
+                                <td class="name">{{ team.name }}</td>
+                                <td>{{ team.success_percentage }}%</td>
+                                <td>
+                                    <input type="checkbox" disabled="disabled" {% if team.sdone %}checked="checked"{% endif %} />
+                                </td>
+                                <td>
+                                    <input type="checkbox" name="{{ team.id }}" value="yes" {% if team.done %}checked="checked"{% endif %} />
+                                </td>
+                            </tr>    
+                        {% endfor %}
+                    </table>
+                </section>
+        {% else %}
+            <form method="POST" action="{% url 'administration:approval' %}" class="col-12 row">
+                {% csrf_token %}
+                <section class="col-12">
+                    <table>
+                        <tr class="row2">
+                            <th>المقرر</th>
+                            <th>نسبة النجاح</th>
+                            <th>اعتماد رئيس الكنترول</th>
+                            <th>اعتماد العميد</th>
+                        </tr>
+                        {% for subject in request.user.team.subjects_list %}
+                            <tr class="row2">
+                                <td class="name">{{ subject.name }}</td>
+                                <td>{{ subject.success_percentage }}%</td>
+                                <td>
+                                    <input type="checkbox" name="{{ subject.id }}" {% if subject.done %}checked="checked"{% endif %} />
+                                </td>
+                                <td>
+                                    <input type="checkbox" disabled="disabled" {% if subject.team.done %}checked="checked"{% endif %} />
+                                </td>
+                            </tr>    
+                        {% endfor %}
+                    </table>
+                </section>
+        {% endif %}
+        {% if not request.user.admin %}
+                <section class="exit-buttons col-12">
+                    <button class="save"  type="submit">حفظ التغييرات</button>
+                </section>
+            </form>
+        {% endif %}
+        <section class="exit-buttons col-12">
+            <div class="row">
+                <div class="col-lg-6"><a href="{% url 'administration:resaults' %}">الرجوع</a></div>
+                <div class="col-lg-6"><a href="{% url 'users:logout' %}">تسجيل الخروج</a></div>
+            </div>
+        </section>
+    </div>
+</div>
+
+</div>
+<footer class="fixed-bottom" style="">
+    <div class="container">
+    <div class="row">
+        <div class="col-lg-4 col-6 offset-lg-5  ">
+            <span>جامعة أسوان - إهداء لجامعات مصر</span>
+        </div>
+        <div class="col-lg-3 col-6 C">
+            <a href="" style="text-decoration:underline; color: #484848;"><span>CREATED BY MAD GROUP</span></a>
+        </div>
+    </div>
+
+{% endblock body %}
+{% block script %}
+    <script>
+    </script>
+{% endblock script %}

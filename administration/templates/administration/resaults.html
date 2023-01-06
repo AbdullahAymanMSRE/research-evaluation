@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block extrastyle %}
+    <link rel="stylesheet" href="{% static 'css/admin-1.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/send-research.css' %}" />
+
+    <style>
+    .subjects .buttons .two div:first-of-type a,
+    .subjects .buttons .three div:first-of-type a{
+        background-color: #009687;
+        border: none;
+        color: #fff;
+        width: 100%;
+        padding: 10px 5px;
+        display:inline-block;
+    }
+    </style>
+{% endblock extrastyle %}
+    
+
+{% block title %}الرسائل البحثية - النتائج{% endblock title %}
+
+{% block body %}
+    <div class="box">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 right">
+                <div class="professor">
+                    <img class="img-fluid" src="/media/images/professor2.png" alt="عضو هيئة تدريس" id="type-f-img">
+                    <span id="name-span" class="name">
+                        {{ request.user.name }} -
+                        {% if request.user.admin %}
+                            مدير المنصة
+                        {% elif request.user.staff %}
+                            عميد {{ request.user.faculty.name }}
+                        {% elif request.user.control_head %}
+                            رئيس كنترول الفرقة {{ request.user.team.name }}
+                        {% endif %}
+                    </span>
+                    <p class="choosed title">
+                        {% if request.user.admin %}
+                            النتائج
+                        {% elif request.user.staff %}
+                            نتائج  {{ request.user.faculty.name }}
+                        {% elif request.user.control_head %}
+                            نتائج الفرقة {{ request.user.team.name }}
+                        {% endif %}
+                    </p>
+
+                </div>
+
+            </div>
+            <section class="done-section">
+                <div class="row">
+                    <div class="col-lg-12 " style="padding: 0;">
+                            <a id="done" class="done" href="{% url 'administration:approval' %}"> صفحة إعتماد النتائج ونسب النجاح</a>
+                    </div>
+                </div>
+
+        </div>
+        </section>
+        <div class="col-lg-12 col-md-12 left subjects">
+
+            <div class="row">
+                <div class="col-12" id="selects">
+                </div>
+            </div>
+        </div>
+        <section class="col-12">
+            <table class="first" class="hide" >
+                <tr class="row2">
+                    <th>إسم الطالب</th>
+                    <th>المقرر</th>
+                    <th>موضوع البحث</th>
+
+                    <th>المقدمة <small>من10</small></th>
+                    <th>محاور الموضوع <small>من20</small></th>
+                    <th>المحتوى النظرى لمحاور الموضوع <small>من40</small></th>
+                    <th>الاستخلاصات <small>من20</small></th>
+                    <th>المراجع <small>من10</small></th>
+                    <th>المجموع <small>من100</small></th>
+
+                    <th>النتيجة</th>
+                </tr>
+                <tbody id="result-table">
+
+                </tbody>
+                <!-- <tr class="row2">
+                    <td rowspan="3" class="name">محمد أحمد حسن السيد</td>
+                    <td>الميكانيكا الحيوية في المجال الرياضي</td>
+                    <td>الفرق بين التحليل الكيفي والتحليل الكمي</td>
+                    <td><span class="passed" id="passed-span-1">مستوفي</span></td>
+                </tr>
+                <tr class="row2">
+                    <td>الميكانيكا الحيوية في المجال الرياضي</td>
+                    <td>الإدارة الرياضية</td>
+                    <td><span class="passed" id="passed-span-1">مستوفي</span></td>
+                </tr>
+                <tr class="row2">
+                    <td>علم النفس الرياضي</td>
+                    <td>الفرق بين التحليل الكيفي والتحليل الكمي</td>
+                    <td><span class="passed" id="passed-span-1">مستوفي</span></td>
+                </tr> -->
+<!-- ---------------------------------------------------------------------------------------------------- -->
+            </table>
+        </section>
+        <section class="col-12 row">
+            <section class="exit-buttons col-lg-{% if request.user.control_head and not request.user.staff %}4{% else %}6{% endif %}" style="margin-top: 0;">
+                <button class="print" type="button" onclick="print()">  <i class="fas fa-print" style="margin-left: 10px;"></i>طباعة </button>
+                
+            </section>
+            <section class="exit-buttons col-lg-{% if request.user.control_head and not request.user.staff %}4{% else %}6{% endif %}" style="margin-top: 0;">
+                <button class="export" type="button" onclick="export_excel()"> <i class="fas fa-file-download" style="margin-left: 10px;"></i>استخراج النتيجة (excel) </button>
+                
+            </section>
+            {% if request.user.control_head and not request.user.staff %}
+                <section class="exit-buttons col-lg-4" style="margin-top: 0;">
+                    <!-- <button class="export" type="button" onclick="export_excel()">  -->
+                        <a style="background-color:orangered" href="{% url 'administration:download_compressed_folder' %}">تحميل جميع الابحاث</a>
+                    <!-- </button> -->
+                </section>
+            {% endif %}
+        </section>
+        <section class="exit-buttons col-12">
+            <div class="row">
+                <div class="col-lg-6"><a href="{% url 'administration:choose' %}">الرجوع</a></div>
+                <div class="col-lg-6"><a href="{% url 'users:logout' %}">تسجيل الخروج</a></div>
+            </div>
+        </section>
+    </div>
+</div>
+
+{% endblock body %}
+{% block script %}
+    <script src="https://kit.fontawesome.com/467a5808c9.js" crossorigin="anonymous"></script>
+    <script src="{% static 'js/xlsx.full.min.js' %}"></script>
+
+    <script>
+        var jstudents = [],
+            jfaculties= [],
+            user = {
+                admin: {% if request.user.admin %} true {% else %} false {% endif %},
+                staff: {% if request.user.staff %} true {% else %} false {% endif %},
+                team: {% if request.user.team %} "{{ request.user.team.name }}" {% else %}""{% endif %},
+                faculty:"{{ request.user.faculty.name }}" ,
+            };
+        {% for student in students %}
+            rs = []
+            {% if student.studnet_researches_list %}
+                {% for student_research in student.studnet_researches_list %}
+                    {% if student_research.corrected %}
+                        rs.push({
+                            name: "{{ student_research.research.name }}",
+                            subject: "{{ student_research.research.subject.name }}",
+                            references: "{{ student_research.references }}",
+                            conclusions: "{{ student_research.conclusions }}",
+                            content: "{{ student_research.content }}",
+                            axes: "{{ student_research.axes }}",
+                            intro: "{{ student_research.intro }}",
+                            total: "{{ student_research.total }}",
+                            passed: "{% if student_research.passed %}مستوفي{% else %}غير مستوفي{% endif %}"
+                        })
+                    {% endif %}
+                {% endfor %}
+                jstudents.push({
+                    name: "{{ student.name }}",
+                    faculty: "{{ student.faculty.name }}",
+                    team: "{{ student.team.name }}",
+                    researches: rs,
+                })
+            {% endif %}
+        {% endfor %}
+        {% for faculty in faculties %}
+                tms=[]
+                {% for team in faculty.teams_list %}
+                    subjs = []
+                    {% for subject in team.subjects_list %}
+                        subjs.push({name: "{{ subject.name }}"})
+                    {% endfor %}
+                    tms.push({
+                        name: "{{ team.name }}",
+                        subjects: subjs,
+                    })
+                {% endfor %}
+                jfaculties.push({
+                    name: "{{ faculty.name }}",
+                    teams: tms,
+                })
+        {% endfor %}
+    </script>
+    <script src="{% static 'js/administration/resaults.js' %}"></script>
+{% endblock script %}
+

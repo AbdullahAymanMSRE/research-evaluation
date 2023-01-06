@@ -1,0 +1,5 @@
+[client]
+database='docss'
+user='root'
+password='my$sqlSfphkhggi123'
+default-character-set='utf8'

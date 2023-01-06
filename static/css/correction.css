@@ -1,0 +1,69 @@
+
+tr {
+    border-top: solid 2px #000;
+}
+td{
+    padding: 15px;
+}
+
+ table {
+    width: 100%;
+    margin: 0 auto;
+    margin-top: 50px;
+    height: 100%;
+    text-align: center;
+}
+table input[type = radio]:hover{
+    cursor: pointer;
+}
+.passed,.not-passed{
+    display: block;
+    width: 100%;
+    color: #fff;
+/*    height: 55px;*/
+    padding: 15.5px  20px;
+    font-weight: 900;
+    transition: all ease-in-out .3s;
+}
+.passed:hover,.not-passed:hover{
+}
+.passed{
+    background-color: #04d904;
+    
+    
+}
+.passed:hover{
+    background-color: #00c300;
+}
+.not-passed{
+    background-color: #bd2d2d;
+
+}
+.not-passed:hover{
+    background-color: #ad2020;
+}
+table .col-6{
+    padding: 0;
+}
+td:last-of-type{
+    padding: 0;
+}
+td:first-of-type{
+    padding: 15px;
+}
+.bkg{
+    background-color: #ddd;
+}
+a:hover{
+    cursor: pointer;
+}
+@media  screen and (max-width: 500px){
+    td {
+        padding: 0 5px;
+        font-size: 0.8em;
+    }
+    td span.passed,
+    td span.not-passed{
+        padding: 0;
+    }
+}

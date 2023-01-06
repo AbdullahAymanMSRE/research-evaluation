@@ -1,0 +1,519 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block extrastyle %}
+    <link rel="stylesheet" href="{% static 'css/admin-1.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/send-research.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/adding_subjects.css' %}" />
+    <style>
+
+        a{
+            background-color:rgb(255, 179, 0); 
+        }
+
+    </style>
+{% endblock extrastyle %}
+    
+
+{% block title %}إدارة المنصة{% endblock title %}
+
+{% block body %}
+    <div class="box">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 right">
+                <div class="professor">
+                    <img class="img-fluid" src="/media/images/professor2.png" alt="عضو هيئة تدريس" id="type-f-img">
+                    <span id="name-span" class="name">{{ request.user.name }}</span>
+                    <p class="choosed title"></p>
+                    <p class="choosed name">المقررات التي تقوم بتدريسها</p>
+                </div>
+            </div>
+            <div class="col-lg-12 col-md-12 left subjects">
+                <div class="row">
+                    <form  method="POST" action="{% url 'unistruct:adding_subjects' %}">
+                        {% csrf_token %}  
+                        <div class="whole-box">
+                            <div class="upper">
+                                <div id="entry_inputs"></div> 
+                            </div>
+                            <div class="col-12 buttons">
+                                <div class="row two">
+                                    <div class="col-6">
+                                        <button type="button" id="add_entry">إضافة مقرر</button>
+                                    </div>
+                                    <div class="col-6">
+                                        <button type="button" id="remove_entry">
+                                        حذف اخر مقرر
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row two">
+                                    <div class="col-12">
+                                        <button type="submit">حفظ</button>
+                                         <a href="{% url 'researches:main' %}" class="backbtn">الرجوع</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="lenEntries" name="lenEntries" readonly/>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock body %}
+{% block script %}
+    <script>
+        const add_entry = document.getElementById("add_entry"),
+            entry_inputs = document.getElementById("entry_inputs"),
+            len_entries = document.getElementById("lenEntries");
+
+        var jfaculties = [],
+            invalid_message = "يحب ملئ هذا الحقل"
+        let fhtml = '',
+            tms = [],
+            tmsubjs = [],
+            sectms = [],
+            subjecs = [],
+            sects = [],
+            subjs = [];
+        
+    
+        
+        {% for faculty in faculties %}
+            tms = []
+            sects = []
+            {% for team in faculty.teams_list %}
+                tmsubjs = [],
+                {% for subject in team.subjects_list %}
+                    tmsubjs.push('{{ subject.name }}')
+                {% endfor %}
+                tms.push({
+                    'name':"{{ team.name }}",
+                    'subjects': tmsubjs
+                })
+            {% endfor %}
+            {% for department in faculty.departments_list %}
+                {% for section in department.sections_list %}
+                    subjecs = []
+                    sectms = []
+                    {% for subjec in section.subjects_list %}
+                        subjecs.push("{{ subjec }}")
+                    {% endfor %}
+                    {% for team in section.teams_list %}
+                        sectms.push("{{ team.name }}")
+                    {% endfor %}
+                    sects.push({
+                        "name": "{{ section.name }}",
+                        'subjects': subjecs,
+                        'teams': sectms
+                        })
+                {% endfor %}
+            {% endfor %}
+            jfaculties.push({
+                'name': "{{ faculty.name }}",
+                'teams': tms,
+                'sections': sects
+            })
+        {% endfor %}
+
+        {% if member.subjects_list %}
+            {% for entry in member.subjects_list %}
+                
+                len_entries.value = "{{ forloop.counter }}";
+                mybox = document.createElement('div'), 
+                myentry = document.createElement('div');
+                
+                mybox.setAttribute('class', 'col-12 box');
+                myentry.setAttribute('class', 'row')
+
+                mybox.appendChild(myentry)
+                entry_inputs.appendChild(mybox)
+                // faculty
+                fhtml = ''
+                for(let faculty of jfaculties){
+                    if(faculty.name != "{{ entry.team.faculty.name }}"){
+                        fhtml += `
+                            <option value="${faculty.name}">${faculty.name}</option>
+                        `
+                    }
+                }
+                myentry.innerHTML += `
+                    <div class="col-12">
+                        <div class="row two">
+                            <div class="col-12">
+                                <label for="faculty{{ forloop.counter }}">الكلية</label>
+                            </div>
+                            <div class="col-12">
+                                <select name="faculty{{ forloop.counter }}" id="faculty{{ forloop.counter }}" oninput="filter(this)" oninvalid="this.setCustomValidity('${invalid_message}')"  required>
+                                    ${fhtml}
+                                    <option value="{{ entry.team.faculty.name }}" selected>{{ entry.team.faculty.name }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    `
+
+
+                // team
+                fhtml = '';
+                for(let faculty of jfaculties){
+                    if(faculty.name == "{{ entry.team.faculty.name }}"){
+                        for(let team of faculty.teams){
+                            if(team.name != "{{ entry.team.name }}"){
+                                fhtml += `
+                                    <option value="${team.name}">${team.name}</option>
+                                `
+                            }
+                        }
+                        myentry.innerHTML += `
+                            <div class="col-12">
+                                <div class="row two">
+                                    <div class="col-12">
+                                        <label for="teams{{ forloop.counter }}">الفرقة</label>
+                                    </div>
+                                    <div class="col-12">
+                                        <select name="team{{ forloop.counter }}" id="teams{{ forloop.counter }}" class='team_select' oninput="filter(this)"   oninvalid="this.setCustomValidity('${invalid_message}')" required>
+                                            ${fhtml}
+                                            <option value="{{ entry.team.name }}" selected>{{ entry.team.name }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            `
+                        break;
+                    }
+
+                }
+
+                // section
+                fhtml = '';
+                for(let faculty of jfaculties){
+                    if(faculty.name == "{{ entry.team.faculty.name }}"){
+                        for(let section of faculty.sections){
+                            if(section.name != "{{ entry.section.name }}"){
+                                fhtml += `
+                                    <option value="${section.name}">${section.name}</option>
+                                `
+                            }
+                        }
+                        myentry.innerHTML += `
+                            <div class="col-12 ">
+                                <div class="row two">
+                                    <div class="col-12">
+                                        <label for="sections{{ forloop.counter }}">الشعبة / القسم</label>
+                                    </div>
+                                    <div class="col-12">
+                                        <select name="section{{ forloop.counter }}" id="sections{{ forloop.counter }}" oninput="filter(this)" oninvalid="this.setCustomValidity('${invalid_message}')" required>
+                                            ${fhtml}
+                                            <option value="{{ entry.section.name }}" selected>{{ entry.section.name }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            `
+                        break;
+                    }
+                }
+
+                // subject
+                fhtml = '';
+                for(let faculty of jfaculties){
+                    if(faculty.name == "{{ entry.team.faculty.name }}"){
+                        for(let section of faculty.sections){
+                            if(section.name == "{{ entry.section.name }}"){
+                                for(let subject of section.subjects){
+                                    if(subject != "{{ entry.name }}"){
+                                        fhtml += `
+                                            <option value="${subject}">${subject}</option>
+                                        `
+                                    }
+                                }
+                                myentry.innerHTML += `
+                                    <div class="col-12">
+                                        <div class="row two">
+                                            <div class="col-12">
+                                                <label for="subjects{{ forloop.counter }}">المقرر</label>
+                                            </div>
+                                            <div class="col-12">
+                                                <select name="subject{{ forloop.counter }}" id="subjects{{ forloop.counter }}" oninput="this.setCustomValidity('')"  oninvalid="this.setCustomValidity('${invalid_message}')" required>
+                                                    ${fhtml}
+                                                    <option value="{{ entry.name }}" selected>{{ entry.name }}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+    
+                                    `
+                            break;
+                            }
+                        }
+                        break;
+                    }
+                }
+
+            {% endfor %}
+        {% else %}
+            len_entries.value = "1";
+            fhtml = '';
+            for(let faculty of jfaculties){
+                if(faculty.name != "{{ member.faculty.name }}"){
+                    fhtml += `
+                        <option value="${faculty.name}">${faculty.name}</option>
+                    `
+                }
+            }
+
+            entry_inputs.innerHTML = `
+                <div class="col-12 box">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row two">
+                                <div class="col-12">
+                                    <label for="faculty1">الكلية</label>
+                                </div>
+                                <div class="col-12">
+                                    <select name="faculty1" id="faculty1" oninput="filter(this)" oninvalid="this.setCustomValidity('${invalid_message}')" required>
+                                        <option value="">اختر الكلية التي تُدرّس بها</option>
+                                        <option value="{{ member.faculty.name }}">{{ member.faculty.name }}</option>
+                                        ${fhtml}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="row two">
+                                <div class="col-12">
+                                    <label for="teams1">الفرقة</label>
+                                </div>
+                                <div class="col-12">
+                                    <select name="team1" id="teams1" class='team_select' oninput="filter(this)"  oninvalid="this.setCustomValidity('${invalid_message}')" required>
+                                    
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 ">
+                            <div class="row two">
+                                <div class="col-12">
+                                    <label for="sections1">الشعبة / القسم</label>
+                                </div>
+                                <div class="col-12">
+                                    <select name="section1" id="sections1" oninput="filter(this)" oninvalid="this.setCustomValidity('${invalid_message}')" required>
+                                    
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="row two">
+                                <div class="col-12">
+                                    <label for="subjects1">المقرر</label>
+                                </div>
+                                <div class="col-12">
+                                    <select name="subject1" id="subjects1" oninput="this.setCustomValidity('')"  oninvalid="this.setCustomValidity('${invalid_message}')" required>
+                                    
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+
+            `
+        {% endif %}
+        
+        if(entry_inputs.childElementCount == 1 ){
+            document.getElementById('remove_entry').style="display: none;"
+        }
+        //---------------------------------------------------
+        //---------------------------------------------------
+        //-----------js and html without python--------------
+        //---------------------------------------------------
+        //---------------------------------------------------
+
+        add_entry.onclick = () => {
+            fhtml = '';
+            let num = Number(len_entries.value) + 1;
+            for(let faculty of jfaculties){
+                if(faculty.name != "{{ member.faculty.name }}"){
+                    fhtml += `
+                        <option value="${faculty.name}">${faculty.name}</option>
+                    `
+                }
+            }
+            facls = []
+            tms = []
+            secns = []
+            subjs = []
+            let entr = ''
+
+            for(entr of document.getElementById('entry_inputs').children){
+                let box = entr.children[0]
+                facls.push(box.children[0].children[0].children[1].children[0].value)
+                tms.push(box.children[1].children[0].children[1].children[0].value)
+                secns.push(box.children[2].children[0].children[1].children[0].value)
+                subjs.push(box.children[3].children[0].children[1].children[0].value)
+            }
+            entry_inputs.innerHTML = entry_inputs.innerHTML + `
+                <div class="col-12 box">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row two">
+                                <div class="col-12">
+                                    <label for="faculty${num}">الكلية</label>
+                                </div>
+                                <div class="col-12">
+                                    <select name="faculty${num}" id="faculty${num}" oninput="filter(this)" oninvalid="this.setCustomValidity('${invalid_message}')" required>
+                                        <option value="">اختر الكلية التي تُدرّس بها</option>
+                                        <option value="{{ member.faculty.name }}">{{ member.faculty.name }}</option>
+                                        ${fhtml}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="row two">
+                                <div class="col-12">
+                                    <label for="teams${num}">الفرقة</label>
+                                </div>
+                                <div class="col-12">
+                                    <select name="team${num}" id="teams${num}" class='team_select' oninput="filter(this)"  oninvalid="this.setCustomValidity('${invalid_message}')" required>
+                                    
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 ">
+                            <div class="row two">
+                                <div class="col-12">
+                                    <label for="sections${num}">الشعبة / القسم</label>
+                                </div>
+                                <div class="col-12">
+                                    <select name="section${num}" id="sections${num}" oninput="filter(this)" oninvalid="this.setCustomValidity('${invalid_message}')" required>
+                                    
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="row two">
+                                <div class="col-12">
+                                    <label for="subjects${num}">المقرر</label>
+                                </div>
+                                <div class="col-12">
+                                    <select name="subject${num}" id="subjects${num}" oninput="this.setCustomValidity('')"  oninvalid="this.setCustomValidity('${invalid_message}')" required>
+                                    
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+            `
+            for(i=0;i<(document.getElementById('entry_inputs').children.length-1);i++){
+                entr = document.getElementById('entry_inputs').children[i].children[0]
+                entr.children[0].children[0].children[1].children[0].value = facls[i]
+                entr.children[1].children[0].children[1].children[0].value = tms[i]
+                entr.children[2].children[0].children[1].children[0].value = secns[i]
+                entr.children[3].children[0].children[1].children[0].value = subjs[i]
+            }
+            document.getElementById('remove_entry').style="display: unset;"
+            len_entries.value = String(num);
+        };
+        document.getElementById('remove_entry').onclick = e => {
+            document.getElementById('entry_inputs').lastElementChild.remove()            
+            
+            if(entry_inputs.childElementCount == 1 ){
+                document.getElementById('remove_entry').style="display: none;"
+            }
+            len_entries.value = String(Number(len_entries.value) - 1);
+          
+        }
+        //---------------------------------------------------
+        //---------------------------------------------------
+        //----------------filter function--------------------
+        //---------------------------------------------------
+        //---------------------------------------------------
+
+        function filter(e){
+            e.setCustomValidity('')
+            if(e.value){
+                type = e.id.slice(0,-1)
+                num = e.id.slice(-1)
+                i = -1
+                while(!isNaN(Number(e.id.slice(i)))){
+                    type = e.id.slice(0,i)
+                    num = e.id.slice(i)
+                    i -= 1;
+                }
+                let fa = {}
+                let mhtml = ''
+                console.log(num)
+                let trgt = jfaculties.find(elem => elem.name == document.getElementById(`faculty${num}`).value)
+                console.log(trgt)
+                let secn = {}
+                let subj = {}
+                if(type=="faculty"){
+                    fa = document.getElementById(`teams${num}`)
+                    fa.innerHTML = `
+                        <option value="">اختر الفرقة</option>
+                    `
+                    console.log(fa)
+                    for(let team of trgt.teams){
+                        fa.innerHTML += `
+                            <option value="${team.name}">${team.name}</option>
+                        `
+                    }
+                    document.getElementById(`subjects${num}`).innerHTML = ''
+                    document.getElementById(`sections${num}`).innerHTML = ''
+                }else if(type == 'teams'){
+                    ta = document.getElementById(`sections${num}`)
+                    ta.innerHTML = `
+                        <option value="">اختر الشعبة / القسم</option>
+                    `
+                    console.log(trgt.sections)
+                    added_secns = trgt.sections.filter(elem => {
+                        return elem.teams.includes(e.value)
+                    })
+                    console.log(added_secns)
+                    for(let added_secn of added_secns){
+                        ta.innerHTML += `
+                            <option value="${added_secn.name}">${added_secn.name}</option>
+                        `
+                    }
+                    document.getElementById(`subjects${num}`).innerHTML = ''
+                }else if(type == "sections"){
+                    fa = document.getElementById(`subjects${num}`);
+                    da = document.getElementById(`teams${num}`)
+                    fa.innerHTML = `
+                        <option value="">اختر المقرر</option>
+                    `
+                    let selected_secn = trgt.sections.filter(el => (e.value == el.name) && (el.teams.includes(da.value)))[0]
+
+                    added_subjs = selected_secn.subjects.filter(elem => {return (trgt.teams.filter(el => {return el.name==da.value})[0].subjects.includes(elem))})
+
+                    var uniqueSubjs = [];
+                    added_subjs.map(s => {
+                        if(!uniqueSubjs.includes(s)){
+                            uniqueSubjs.push(s)
+                        }
+                    })
+
+                    for(added_subj of uniqueSubjs){
+                        fa.innerHTML += `
+                            <option value="${added_subj}">${added_subj}</option>
+                        `
+                    }
+                }else{
+                document.getElementById(`teams${num}`).innerHTML = ''
+                document.getElementById(`sections${num}`).innerHTML = ''
+                document.getElementById(`subjects${num}`).innerHTML = ''
+
+            }
+        }
+        
+    }
+    </script>
+{% endblock script %}

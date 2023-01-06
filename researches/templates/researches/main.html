@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block extrastyle %}
+    <link rel="stylesheet" href="{% static 'css/subjects.css' %}" />
+    <style>
+        .box .left span.choose-span{
+            color:#078194;
+            font-size: 2em;
+        }
+	.ofem{
+		display:block;
+		padding:10px;
+		color: darkred;
+	}
+    </style>
+{% endblock extrastyle %}
+    
+
+{% block title %}الرسائل البحثية - اختيار المقررات{% endblock title %}
+
+{% block body %}
+    <div class="box">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 right">
+                <div class="professor">
+                    <img class="img-fluid" src="{% if request.user.doctor %}/media/images/professor2.png{% else %}/media/images/single-student.png{% endif %}" alt="مستخدم" id="type-f-img">
+                    <span id="name-span" class="name">{{ request.user.name }}</span>
+                    <p>مرحبا بك على المنصة الخاصة بإدارة الرسائل البحثية </p>
+                </div>
+            </div>
+            <div class="col-lg-12 col-md-12 left subjects" id="subjects">
+
+                <div class="row">
+                    <div class="col-12">
+			    {% if not request.user.doctor %}
+			    <span class="ofem" >البريد الإلكتروني الجامعي : {{ request.user.official_email }}</span>
+			    <span class="ofem" style="margin-bottom:10px;">كلمة السر : {{ request.user.official_email_passwd }}</span>
+			    {% endif %}
+                        <span class="choose-span"> قم بإختيار المقرر</span>
+                    </div>
+                    {% if request.user.subjects_list %}
+                        {% for subj in request.user.subjects_list %}
+			<div class="col-12 item"{% if not request.user.doctor %}{% if not subj.team == request.user.team %}style="background-color:#F00;"{% endif %}{% endif %}>
+                                <a href="
+                                {% if request.user.doctor %}
+				    {% if subj.id == 363 %}
+				    	http://sea.alexu.edu.eg/index.php/ar/2015-06-11-09-54-18/2/3238-2020-05-18-15-41-51
+				    {% else %}
+					    {% if subj.rseen %}
+						{% url 'researches:select_topic_to_correct' id=subj.id %}
+					    {% else %}
+						{% url 'researches:create_topic' id=subj.id %}
+					    {% endif %}
+				    {% endif %}
+                                {% else %}
+				    {% if subj.id == 363 %}
+				    	http://sea.alexu.edu.eg/index.php/ar/2015-06-11-09-54-18/2/3238-2020-05-18-15-41-51
+				    {% else %}
+					    {% url 'researches:select_topic_to_correct' id=subj.id %}
+				    {% endif %}
+				    {% endif %}"{% if subj.id == 363 %}target="_blank"{% endif %}>
+					<button>{{ subj.name }}{% if not request.user.doctor %}{% if not subj.team == request.user.team %} - تخلف{% endif %}{% endif %}
+					{% if subj.id == 363 %}
+						<br />
+						لمزيد من المعلومات حول الموضوعات البحثية لمقرر التربية العسكرية وتسليم المقالة البحثية علي منصة الجامعة يرجي الدخول علي موقع الكلية بالضغط هنا
+						{% endif %}
+					
+					</button>
+                                </a>
+                                <span>{{ subj.section.department.faculty }}</span>
+                                <span>{{ subj.team.name }}</span>
+                                {% if request.user.doctor %}
+                                    <section class="s-report">
+                                        <div class="row">
+                                            <div class="content hide" id="content{{ forloop.counter }}">
+                                                <div class="col-12 r-item">
+                                                    <h3 class="s-n" id="sn"> قمت بإضافة <span style="color:darkred;">{{ subj.len_researches_list }}</span>  من المواضيع لهذا المقرر</h3>
+                                                </div>
+                                                <div class="col-12 r-item">
+                                                    <h3 class="s-s" id="ss"><span style="color:darkred;">{{ subj.len_students }}</span> من الطلاب يدرس هذا المقرر </h3>
+                                                </div>
+                                                <div class="col-12 r-item">
+                                                    <h3 class="s-d" id="sd"> <span style="color:darkred;">{{ subj.len_student_researches_list }}</span>  من الطلاب قام بتقديم بحث في هذا المقرر </h3>
+                                                </div>
+                                            </div>
+                                            <button id="arrow{{ forloop.counter }}" onclick="show_data(this)">
+                                                <div class="col-12 r-item arrow"><i class="fas fa-angle-down" id="arrowi{{ forloop.counter }}"></i></div>
+                                            </button>
+                                        </div>
+                                    </section>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="col-12 item">
+                            ليس هناك اي مقررات مسجلة لهذا المستخدم
+                        </div>
+                    {% endif %}
+                    </div> 
+                </div>
+            </div>
+            <section class="exit-buttons col-12">
+                {% if request.user.doctor %}
+                    <div class="row">
+                        <div class="col-lg-12"><a href="{% url 'administration:choose' %}">الرجوع</a></div>
+                    </div>
+                {% endif %}
+                <div class="row">
+                    <div class="col-lg-12"><a href="{% url 'users:logout' %}" style="background-color: darkred;">تسجيل الخروج</a></div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+{% endblock body %}
+
+{% block script %}
+    <script src="https://kit.fontawesome.com/467a5808c9.js" crossorigin="anonymous"></script>
+    <script>
+try {
+    // document.getElementById("arrow").onclick = 
+    function show_data (e) {
+        num = e.id.slice(-1)
+        i = -1
+        while(!isNaN(Number(e.id.slice(i)))){
+            num = e.id.slice(i)
+            i -= 1;
+        }        
+        document.getElementById(`content${num}`).classList.toggle("hide");
+        document.getElementById(`arrowi${num}`).classList.toggle("fa-angle-down");
+        document.getElementById(`arrowi${num}`).classList.toggle("fa-angle-up");
+    }
+} catch{ }
+    </script>
+{% endblock script %}

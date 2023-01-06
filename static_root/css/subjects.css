@@ -1,0 +1,148 @@
+body{
+    display: flex;
+	flex-wrap: nowrap;
+	justify-content: center;
+	align-items: center;
+}
+.box{
+    margin: auto;
+    background-color: white;
+    box-shadow: 8px 8px 25px #00000061;
+    text-align: center;
+    
+}
+.box input{
+    width: 70%;
+    border: solid 1px #000;
+    padding:  5px  ;
+    margin-top: 20px;
+    border-radius: 5px;
+}
+.box .right img{
+    max-width: 200px;
+	display: block;
+	margin: auto;
+	margin-bottom: 20px;
+    transition: transform ease-in-out 0.3s;
+    padding-top: 150px;
+}
+.box .right  span{
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #fff;
+}
+.box .right p{
+    margin-top: 40px;
+    font-size: 1.3em;
+    color: #fff;
+
+}
+
+.box .right{
+    /* background-color: #00bbd4; */
+    padding: 50px;
+    background-image: linear-gradient(rgb(0, 187, 150,0.8),rgb(0, 187, 150,0.8)), url("/media/images/change-background.jpg");
+    background-repeat: no-repeat;
+    height: 100%;
+}
+.box .left{
+    padding: 50px;
+    display: flex;
+	flex-wrap: nowrap;
+	justify-content: center;
+	align-items: center;
+}
+label h2{
+    color: #08a6bd;
+}
+
+  .subjects {
+      width: 100%;
+  }
+  .subjects .item{
+
+  }
+  .subjects .item a button{
+      background-color: #fff;
+      width: 100%;
+      padding: 25px 23px;
+      margin-top: 40px;;
+      border: none;
+      border-right: solid 5px #08a6bd ;
+      box-shadow: 2px 2px 5px #00000061;
+      transition: all ease-in-out 0.3s;
+      font-size: 1.2em;
+  }
+  .subjects .item a button:hover{
+    box-shadow: 2px 2px 5px #a13232;
+
+    border-right: solid 5px #a13232 ;
+  }
+  .subjects .item span:nth-child(3){
+      background-color: #08a6bd;
+      padding: 5px;
+      display: block;
+      width: 100%;
+      color: #fff;
+      border-bottom: solid 2px #078194;
+  }
+  .subjects .item span:nth-child(2){
+    background-color: #08a6bd;
+    padding: 5px;
+    display: block;
+    width: 100%;
+    color: #fff;
+    border-bottom: solid 2px #078194;
+}
+
+
+
+
+  .s-report .r-item.arrow{
+     padding: 0; 
+  }
+  .s-report .r-item h3{
+      font-size: 1em;
+}
+  .s-report .r-item.arrow i {
+      font-size: 2em;
+  }
+  .s-report .r-item{
+      border-bottom: solid 2px #078194;
+  }
+  
+
+
+
+.red{
+    background-color: red;
+}
+.white{
+    background-color: white;
+}
+.black{
+    background-color: black;
+}
+
+
+  @media  screen and (max-width: 500px) {
+	/* For desktop: */
+	label h2{
+        font-size: 1.5em;
+       
+    }
+    .box .left {height: 100%}
+    .box input{    width: 85%;}
+  }
+  @media  screen and (max-width: 768px){
+    .container{
+        padding-left: 0px;
+	    padding-right: 0px;
+    }
+    .box .left{
+        padding: 50px 0;
+    }
+    .col-12{
+        padding: 0;
+    }
+  }

@@ -1,0 +1,260 @@
+@font-face {
+	font-family: all3;
+	src: url("../fonts/Roboto-Regular-webfont.woff");
+}
+.row{
+	margin: 0;
+	width: 100%;
+}
+* {
+	font-family: 'Changa', sans-serif;
+}
+
+body {
+	direction: rtl !important;
+	background-color: #fdfbd4;
+	margin-bottom: 60px;
+	/* background: linear-gradient(to bottom,#003399, #336699); */
+}
+
+.container {
+	padding-left: 70px;
+	padding-right: 70px;
+
+	
+}
+label:hover{
+	cursor: pointer;
+}
+p.choosed{
+    margin-top: 30px;
+    font-size: 1.3em;
+    color: #fff;
+}
+.box{
+	margin-bottom: 50px !important; 
+}
+.hide{
+	display:none;
+}
+a,a:hover{
+	text-decoration: none;
+	color: #000;
+}
+select{
+	width: 100%;
+}
+footer{
+	/* position: fixed;
+    height: 60px;
+    bottom: 0;
+	width: 100%; */
+	background-color: gray;
+	color: #484848;
+}
+.container > .footer {
+		width: auto;
+		max-width: 680px;
+		padding: 0 15px;
+	  }
+
+footer div{
+	text-align: right;
+}
+footer div.C{
+	text-align: center;
+}
+
+/* -----------------------------report style ----------------------- */
+.s-report{
+    width: 100%;
+}
+.s-report button{
+    width: 100%;
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+.s-report .content{
+    width: 100%;
+
+}
+.hide{
+    display: none;
+}
+.s-report .r-item{
+    background-color: #08a6bd;
+    color: #fff;
+    border-bottom:solid 1px #fff;
+    padding: 5px 0;
+}
+.s-report .r-item.arrow{
+    background-color: #0a879b;
+    border-bottom: none;
+}
+.s-report .r-item.arrow i{
+    font-size: 3em;
+}
+/* ---------------------------------------- title -------------------*/
+div.title{
+	text-align: center;
+	padding-top: 100px;
+	
+}
+div.title h1{
+	font-size: 3.4em;
+}
+div.title span{
+	font-size: 3.5em;
+	color: #b73737;
+	/*  */
+}
+/* ----------------------------------------user-type------------------------------- */
+section.user-type{
+	display: flex;
+	flex-wrap: nowrap;
+	justify-content: center;
+	align-items: center;
+	margin-top: 100px;
+	text-align: center;
+}
+section.user-type a{
+	
+}
+section.user-type div{
+	text-align: center;
+	display: inline-block;
+	margin: auto;
+
+	
+}
+section.user-type div img{
+	max-width: 200px;
+	display: block;
+	margin: auto;
+	margin-bottom: 30px;
+	transition: transform ease-in-out 0.3s;
+}
+section.user-type a:last-of-type div{
+	margin-right: 50px;
+	
+}
+section.user-type a:hover img{
+	transform:scale(1.2);
+}
+section.user-type a:hover span{
+	
+}
+section.user-type div span{
+	font-size: 2em;
+	color: #666;
+	font-weight: bold;
+	
+}
+
+
+
+
+/*--------------------------------- login ---------------------------  */
+
+/* Start media query */
+
+@media  screen and (max-width: 768px) {
+	/* For desktop: */
+	h1 {font-size: 2em;}
+	div.title span{font-size: 2.5em;}
+	/* section.user-type div{	margin-right: 30px;} */
+	section.user-type div img{	max-width: 150px;}
+	section.user-type div:first-of-type span{	font-size: 1.8em;}
+	section.user-type div:last-of-type span{font-size: 1em;}
+  }
+  @media  screen and (max-width: 437px){
+	  footer .container .row div:last-of-type span{
+		  line-height: 48px;
+	  } 
+  }
+  @media  screen and (max-width: 500px) {
+	/* For desktop: */
+	div.title h1{font-size: 1.5em;}
+	div.title span{font-size: 2em;}
+	section.user-type div span:last-of-type{font-size: 1em;}
+	.container{padding-left: 10px;
+		padding-right: 10px;}
+	footer span{
+		font-size: 0.8em;
+		text-align: center;
+	}
+	footer div {
+		text-align: center;
+	}
+  }
+
+
+/* End media query */
+
+
+
+
+
+/* ----------------- exit buttons style ------------------ */
+.left{
+	padding-bottom: 0!important;
+}
+.exit-buttons .row{
+}
+.exit-buttons {
+	width: 100%;
+	margin-top: 50px;
+	padding: 0;
+}
+
+.exit-buttons a{
+	background-color: darkred;
+	width: 100%;
+	display: block;
+	color: #fff;
+	padding: 10px;
+	text-decoration: none;
+}
+.exit-buttons a:hover{
+	background-color: rgb(170, 5, 5);
+}
+.exit-buttons div div{
+	width: 100%;
+	padding: 0;
+}
+.exit-buttons div div:first-of-type  a{
+	background-color: gray;
+}
+.exit-buttons div div:first-of-type  a:hover{
+	background-color: rgb(104, 104, 104);
+}
+/* ----------------- save buttons style ------------------ */
+button.save,
+.print,
+.export{
+	width: 100%;
+	border: none;
+	background-color:  rgb(255, 179, 0);
+	color: #fff;
+	padding: 10px;
+	transition: all ease .3s;
+}
+.print{
+	background-color: #007fef;
+}
+.export{
+	background-color: #30af30;
+}
+.export:hover{
+	background-color: #1e8b1e;
+}
+button.print:hover{
+	background-color: #036ac5;
+}
+button.save:hover{
+	background-color: #ecaa10;
+}
+.box .right img{
+	margin-top: 0;
+}

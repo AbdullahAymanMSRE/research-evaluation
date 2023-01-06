@@ -1,0 +1,19 @@
+.box:not(:first-of-type){
+
+}
+
+#entry_inputs .box{
+    box-shadow: none;
+    border: solid 2px darkgray;
+    padding: 20px;
+    margin-top: 0;
+}
+.subjects .buttons .two div:last-of-type button[type=button]{
+    background-color: darkred;
+}
+.backbtn{
+    background-color:gray;
+    display:block;
+    padding:15px;
+    color: white;
+}

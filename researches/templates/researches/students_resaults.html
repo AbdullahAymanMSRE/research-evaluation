@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block extrastyle %}
+    <link rel="stylesheet" href="{% static 'css/admin-1.css' %}">
+    <link rel="stylesheet" href="{% static 'css/send-research.css' %}">
+    <link rel="stylesheet" href="{% static 'css/result-stu.css' %}">
+{% endblock extrastyle %}
+    
+
+{% block title %}الرسائل البحثية - النتائج{% endblock title %}
+
+{% block body %}
+    <div class="box">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 right">
+                <div class="professor">
+                    <img class="img-fluid" src="/media/images/single-student.png" alt="طالب" id="type-f-img">
+                    <span id="name-span" class="name">{{ request.user.name }}</span>
+                    <p class="choosed name">النتيجة النهائية</p>
+                </div>
+            </div>
+            <section class="col-12">                
+                <table class="first" class="hide" id="approval-table">
+                    <tr class="row2">
+                        <th>المقرر</th>
+                        <th>موضوع البحث</th>
+                        <th>النتيجة</th>
+                    </tr>
+
+                    {% for sr in request.user.studnet_researches_list %}
+                        <tr class="row2">
+                            <td class="name">{{ sr.research.subject }}
+			   	{% if sr.research.subject.team  request.user.team %}
+				- تخلف
+				{% endif %}
+			    </td>
+                            <td>{{ sr.research.name }}</td>
+                            <td>
+                                <span class="{% if sr.passed %}passed{% else %}not-passed{% endif %}" id="{% if sr.passed %}passed{% else %}not-passed{% endif %}-span">
+                                    {% if sr.passed %}
+                                        مستوفي
+                                    {% else %}
+                                        غير مستوفي
+                                    {% endif %}
+                                </span>         
+                            </td>
+                        </tr>                    
+                    {% endfor %}
+                </table>         
+            </section>
+            <section class="exit-buttons col-12">
+                <button class="print"  type="submit" onclick="print()"> <i class="fas fa-print" style="margin-left: 10px;"></i>طباعة</button>
+            </section>
+            <section class="exit-buttons col-12">
+                <div class="row">
+                    <div class="col-lg-12"><a  style="background-color: darkred;" href="{% url 'users:logout' %}">تسجيل الخروج</a></div>
+                </div>
+            </section>
+        </div>
+    </div>
+{% endblock body %}
+
+{% block script %}
+    <script></script>
+{% endblock script %}

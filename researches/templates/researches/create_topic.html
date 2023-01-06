@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extrastyle %}
+    <link rel="stylesheet" href="{% static 'css/research-name.css' %}">
+{% endblock extrastyle %}
+
+{% block title %}الرسائل البحثية - اختيار المواضيع{% endblock title %}
+
+{% block body %}
+    <div class="box">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 right">
+                <div class="professor">
+                    <img class="img-fluid" src="/media/images/professor2.png" alt="عضو هيئة تدريس" id="type-f-img">
+                    <span id="name-span" class="name">{{ request.user.name }}</span>
+                    <p>المقرر الذي قمت باختياره</p>
+                    <p>{{ selected_subject.name }}</p>
+
+                </div>
+            </div>
+                <!-- <section class="s-report">
+                    <div class="row">
+                        <div class="content hide" id="content">
+                            <div class="col-12 r-item">
+                                <h3 class="s-n" id="sn"> قمت بإضافة <span style="color:darkred;">5</span>  من المواضيع لهذا المقرر</h3>
+                            </div>
+                            <div class="col-12 r-item">
+                                <h3 class="s-s" id="ss"><span style="color:darkred;">1000</span> من الطلاب يدرس هذا المقرر </h3>
+                            </div>
+                            <div class="col-12 r-item">
+                                <h3 class="s-d" id="sd"> <span style="color:darkred;">1000</span>  من الطلاب قام بتقديم بحث في هذا المقرر </h3>
+                            </div>
+                        </div>
+                        <button id="arrow" onclick="event.preventDefault()">
+                            <div class="col-12 r-item arrow"><i class="fas fa-angle-down" id="arrowi"></i></div>
+                        </button>
+                    </div>
+                </section> -->
+            <div class="col-lg-12 col-md-12 left subjects">
+
+                <div class="row">
+                    <div class="col-12">
+                        <span>قم باختيار مواضيع الأبحاث لهذا المقرر</span>
+                    </div>
+                    <form method="POST" action="{% url 'researches:create_topic' id=selected_subject.id %}" id="subject-form">
+                        {% csrf_token %}
+                        <input type="hidden" id="numr" name="numr"  />
+                        <div class="upper" id="rinputs">
+                            {% if selected_subject.researches_list %}
+                                {% for research in selected_subject.researches_list %}
+                                    {% if forloop.counter > 1 %}
+                                        <div id="choose-sub-box-{{ forloop.counter }}">
+                                            <div class="col-12 item" id = "r-box-{{ forloop.counter }}">
+                                                <label for="subject-{{ forloop.counter }}">الموضوع {{ forloop.counter }}</label>
+                                                <textarea name="subject-{{ forloop.counter }}" id="subject-{{ forloop.counter }}"   placeholder="الموضوع {{ forloop.counter }}" oninvalid="(this.value) ? this.setCustomValidity('هذا البحث موجود من قبل') : this.setCustomValidity('يجب ملئ هذا الحقل')" oninput="input_clicked(this)" required >{{ research.name }}</textarea>
+                                            </div>
+                                            <div class="col-12">
+                                                <button type="button" id="remover-{{ forloop.counter }}" class = "remover" onclick = "rr(this)" >حذف الموضوع</button>
+                                            </div>
+
+                                    {% else %}
+                                        <div id="choose-sub-box-1">
+                                            <div class="col-12 item" id = "r-box-1">
+                                                <label for="subject-1">الموضوع {{ forloop.counter }}</label>
+                                                <textarea name="subject-1" id="subject-1"  placeholder="الموضوع {{ forloop.counter }}" oninvalid="(this.value) ? this.setCustomValidity('هذا البحث موجود من قبل') : this.setCustomValidity('يجب ملئ هذا الحقل')" oninput="input_clicked(this)" required>{{ research.name }}</textarea>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <div id="choose-sub-box-1">
+                                    <div class="col-12 item" id = "r-box-1">
+                                        <label for="subject-1">الموضوع 1</label>
+                                        <textarea name="subject-1" id="subject-1"  placeholder="الموضوع 1" oninvalid="(this.value) ? this.setCustomValidity('هذا البحث موجود من قبل') : this.setCustomValidity('يجب ملئ هذا الحقل')" oninput="input_clicked(this)" required></textarea>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-12 buttons">
+                            <div class="row two" id="buttons" >
+                                
+                                {% if selected_subject.len_researches_list < 3 %}
+                                    <div class="col-6"><button type="submit">إنهاء</button></div>
+                                    <div class="col-6"><button type="button" id="another-subject" onclick="addr()">اضافة موضوع آخر</button></div>
+                                {% else %}
+                                    <div class="col-12"><button type="submit">إنهاء</button></div>
+                                {% endif %}
+                            </div>
+                            <!-- <div class="row three">
+                                <div class="col-4"><button type="submit">إنهاء</button></div>
+                                <div class="col-4"><button type="button">اضافة موضوع آخر</button></div>
+                                <div class="col-4"><button type="button">حذف الموضوع</button></div>
+                            </div> -->
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <section class="exit-buttons col-12">
+                <div class="row">
+                    <div class="col-lg-6"><a href="{% url 'researches:main' %}">الرجوع</a></div>
+                    <div class="col-lg-6"><a href="{% url 'users:logout' %}">تسجيل الخروج</a></div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+{% endblock body %}
+
+{% block script %}
+
+    <script src="{% static 'js/researches/create_topic.js' %}"></script>
+    <script>
+    numr.value = "0"
+    {% if selected_subject.researches_list %}
+        {% for research in selected_subject.researches_list %}
+            numr.value = `${Number(numr.value) + 1}`
+        {% endfor %}
+    {% else %}
+        numr.value = "1"
+    {% endif %}
+
+    function input_clicked(trgt){
+        trgt.setCustomValidity('')
+        for(let inpt of document.getElementById("subject-form").querySelectorAll('input[type="text"]')){
+            console.log(inpt)
+
+            if(inpt.value == trgt.value){
+                trgt.setCustomValidity('هذا البحث موجود من قبل')
+                break;
+            }
+        }
+    }
+</script>
+{% endblock script %}
+

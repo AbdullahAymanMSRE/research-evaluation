@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extrastyle %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}" />
+{% endblock extrastyle %}
+
+{% block title %}الرسائل البحثية - تسجيل الدخول{% endblock title %}
+
+{% block body %}
+<div class="box">
+    <div class="row">
+        <div class="col-lg-6 col-md-12 right">
+            <div class="professor">
+                <img class="img-fluid"
+                    src="{% if prof == 'professor' %}/media/images/professor2.png{% else %}/media/images/student.png{% endif %}"
+                    alt="{% if prof == 'professor' %}عضو هيئة تدريس{% else %}طالب{% endif %}" id="type-img">
+                <span id="type-span">{% if prof == 'professor' %}عضو هيئة تدريس{% else %}طالب{% endif %}</span>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-12 left">
+            <form action="{% url 'users:passwd_login' prof=prof %}" id="passwd-login" method="POST">
+                {% csrf_token %}
+                <span><div  class="alert alert-warning collapse" role="alert">ستجد كلمة السر الخاصة بك على البريد الإلكتروني : {{ email }}</div></span>
+                <label for="national-id">
+                    <h2>تسجيل كلمة السر</h2>
+                </label>
+                <input type="password" name="password" id="passwd" placeholder="كلمة السر" required>
+                <button type="submit">الدخول</button>
+                <p>{% if wrong %}<span><div  class="alert alert-danger collapse" role="alert">خطأ في كلمة السر</div></span>{% endif %}</p>
+                <section class="exit-buttons col-12">
+                    <div class="row">
+                        <div class="col-lg-12"><a href="{% url 'users:login' prof=prof %}">الرجوع</a></div>
+                    </div>
+                </section>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock body %}
+
+{% block script %}
+<script src="{% static 'js/users/login.js' %}"></script>
+<script>
+    $('.alert').show('fade')
+</script>
+{% endblock script %}

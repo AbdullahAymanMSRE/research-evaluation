@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extrastyle %}
+    <link rel="stylesheet" href="{% static 'css/corrction-chs.css' %}">
+    <link rel="stylesheet" href="{% static 'css/research-name.css' %}">    
+{% endblock extrastyle %}
+
+{% block title %}الرسائل البحثية - اختيار المواضيع{% endblock title %}
+
+{% block body %}
+
+    <div class="box">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 right">
+                <div class="professor">
+                    <img class="img-fluid" src="{% if request.user.doctor %}/media/images/professor2.png{% else %}/media/images/single-student.png{% endif %}" alt="مستخدم" id="type-f-img">
+                    <span id="name-span" class="name">{{ request.user.name }}</span>
+                    <p class="choosed title">المقرر الذي قمت باختياره : </p>
+                    <p class="choosed name">{{ selected_subject.name }}</p>
+
+                </div>
+            </div>
+            {% if request.user.doctor %}
+                <section class="s-report">
+                    <div class="row">
+                        <div class="content hide" id="content">
+                            <div class="col-12 r-item">
+                                <h3 class="s-n" id="sn"> قمت بإضافة <span style="color:darkred;">{{ selected_subject.len_researches_list }}</span>  من المواضيع لهذا المقرر</h3>
+                            </div>
+                            <div class="col-12 r-item">
+                                <h3 class="s-s" id="ss"><span style="color:darkred;">{{ selected_subject.len_students }}</span> من الطلاب يدرس هذا المقرر </h3>
+                            </div>
+                            <div class="col-12 r-item">
+                                <h3 class="s-d" id="sd"> <span style="color:darkred;">{{ selected_subject.len_student_researches_list }}</span>  من الطلاب قام بتقديم بحث في هذا المقرر </h3>
+                            </div>
+                        </div>
+                        <button id="arrow" onclick="event.preventDefault()">
+                            <div class="col-12 r-item arrow"><i class="fas fa-angle-down" id="arrowi"></i></div>
+                        </button>
+                    </div>
+                </section>
+            {% endif %}
+            <div class="col-lg-12 col-md-12 left subjects">
+
+                <div class="row">
+                    <div class="col-12">
+                        <span>قم بإختيار الموضوع</span>
+                    </div>
+                    <div class="whole-box col-12">
+                        <div class="upper" id="rinputs">
+                            
+                            {% if not request.user.doctor %}
+                                {% if stu_h %}
+                                    <div id="choose-sub-box">
+                                        <div class="col-12 item">
+                                            <h2>{{ stu_h.research.name }}</h2>
+                                            <span>لقد قمت بإختيار هذا الموضوع</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 buttons">
+                                        <div class="row two" id="buttons">
+                                            <div class="col-12"><a href="{% url 'researches:upload_research' sid=selected_subject.id rid=stu_h.research.id %}"><button type="submit">رؤية البحث</button></a></div>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    {% if selected_subject.len_researches_list >= 1 %}
+                                        {% for research in selected_subject.researches_list %}
+                                            <div id="choose-sub-box">
+                                                <div class="col-12 item">
+                                                    <h2>{{ research.name }}</h2>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 buttons">
+                                                <div class="row two" id="buttons">
+                                                    <div class="col-12"><a href="{% url 'researches:upload_research' sid=selected_subject.id rid=research.id %}"><button type="submit">اختيار الموضوع</button></a></div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                            <div id="choose-sub-box">
+                                                <div class="col-12 item">
+                                                    <h2>ليست هناك اي مواضيع حتى الآن</h2>
+                                                </div>
+                                            </div>
+                                    {% endif %}
+                                {% endif %}
+                            {% else %}
+                                {% if selected_subject.researches_list %}
+                                    {% for research in selected_subject.researches_list %}
+                                        <div id="choose-sub-box">
+                                            <div class="col-12 item">
+                                                <h2>{{ research.name }}</h2>
+                                                <span>{{ research.len_students }} من المشروعات في هذا الموضوع</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 buttons">
+                                            <div class="row two" id="buttons">
+                                                <div class="col-12"><a href="{% url 'researches:correcting' sid=selected_subject.id rid=research.id %}"><button type="submit">تقييم</button></a></div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div id="choose-sub-box">
+                                        <div class="col-12 item">
+                                            <h2>ليست هناك اي مواضيع حتى الآن</h2>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                                
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            <section class="exit-buttons col-12">
+                <div class="row">
+                    <div class="col-lg-6"><a href="{% url 'researches:main' %}">الرجوع</a></div>
+                    <div class="col-lg-6"><a href="{% url 'users:logout' %}">تسجيل الخروج</a></div>
+                </div>
+            </section>
+        </div>
+{% endblock body %}
+{% block script %}
+    <script src="https://kit.fontawesome.com/467a5808c9.js" crossorigin="anonymous"></script>
+    <script>
+        try {
+            document.getElementById("arrow").onclick = function () {
+                document.getElementById("content").classList.toggle("hide");
+                document.getElementById("arrowi").classList.toggle("fa-angle-down");
+                document.getElementById("arrowi").classList.toggle("fa-angle-up");
+            }
+        } catch{ }
+    </script>
+
+{% endblock script %}
+
